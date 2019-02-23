@@ -18,11 +18,11 @@ public class Code {
 
     private int height, width, x, y;
     private int color;
-    private String str;
+    private String codeStr;
 
-    public Code(int x, int y, int width, int height, String str) {
+    public Code(int x, int y, int width, int height, String codeStr) {
         this.x = x;
-        this.str = str;
+        this.codeStr = codeStr;
         this.width = width;
         this.height = height;
         this.y = y;
@@ -42,7 +42,7 @@ public class Code {
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         Font font1 = new Font("微软雅黑", Font.BOLD, 20);
         g.setFont(font1);
-        g.drawString(str, x + 35, y + 20);
+        g.drawString(codeStr, x + 35, y + 20);
     }
 
     private void setPaintColor(int color,Graphics2D g2) {
@@ -97,5 +97,9 @@ public class Code {
 
     public int getY() {
         return y;
+    }
+
+    public void setCodeStr(String str) {
+        codeStr = str;
     }
 }

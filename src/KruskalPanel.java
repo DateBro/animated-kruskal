@@ -2,6 +2,7 @@ import edu.princeton.cs.algs4.In;
 import graphics.model.Code;
 import graphics.model.GraphicsEdgeWeightedGraph;
 import graphics.model.GraphicsKruskalMST;
+import utils.CodeArray;
 
 import javax.swing.*;
 import java.awt.*;
@@ -205,15 +206,20 @@ public class KruskalPanel extends JPanel {
     }
 
     private void initCodes() {
-        codes = new Code[7];
+//        codes = new Code[7];
+//
+//        codes[0]=new Code(1060,590,530,30,"Sort E edges by increasing weight");
+//        codes[1]=new Code(1060,620,530,30,"T = {}");
+//        codes[2]=new Code(1060,650,530,30,"for (i = 0; i < edgeList.length; i++)");
+//        codes[3]=new Code(1060,680,530,30,"    if adding e = edgeList[i] does not form a cycle");
+//        codes[4]=new Code(1060,710,530,30,"        add e to T");
+//        codes[5] = new Code(1060, 740, 530, 30, "    else ignore e");
+//        codes[6] = new Code(1060, 770, 530, 30, "MST = T");
 
-        codes[0]=new Code(1060,590,530,30,"Sort E edges by increasing weight");
-        codes[1]=new Code(1060,620,530,30,"T = {}");
-        codes[2]=new Code(1060,650,530,30,"for (i = 0; i < edgeList.length; i++)");
-        codes[3]=new Code(1060,680,530,30,"    if adding e = edgeList[i] does not form a cycle");
-        codes[4]=new Code(1060,710,530,30,"        add e to T");
-        codes[5] = new Code(1060, 740, 530, 30, "    else ignore e");
-        codes[6] = new Code(1060, 770, 530, 30, "MST = T");
+        String inputFileName = "graphics/input/KruskalCodes.txt";
+        In in = new In(inputFileName);
+        CodeArray codeArray = new CodeArray(in);
+        codes = codeArray.codes();
     }
 
     private void initKruskalGraph(String inputFileName) {

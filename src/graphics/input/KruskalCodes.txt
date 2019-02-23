@@ -1,0 +1,15 @@
+7
+1060 590 530 30
+1060 620 530 30
+1060 650 530 30
+1060 680 530 30
+1060 710 530 30
+1060 740 530 30
+1060 770 530 30
+Sort E edges by increasing weight
+T = {}
+for (i = 0; i < edgeList.length; i++)
+if adding e = edgeList[i] does not form a cycle
+        add e to T
+    else ignore e
+MST = T
