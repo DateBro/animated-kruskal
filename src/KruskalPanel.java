@@ -1,7 +1,8 @@
 import edu.princeton.cs.algs4.In;
-import graphics.model.Code;
-import graphics.model.GraphicsEdgeWeightedGraph;
-import graphics.model.GraphicsKruskalMST;
+import edu.princeton.cs.algs4.MinPQ;
+import edu.princeton.cs.algs4.Queue;
+import edu.princeton.cs.algs4.UF;
+import graphics.model.*;
 import utils.CodeArray;
 
 import javax.swing.*;
@@ -16,16 +17,13 @@ import java.awt.event.ActionListener;
 public class KruskalPanel extends JPanel {
     private int height;
     private int width;
-    private int x_locate = 0;
-    private int y_locate = 0;
-    private static int N = 15;
+    private int xLocate = 0;
+    private int yLocate = 0;
     private static int speed = 300;
-    private static boolean stopFlag =false;
+    private static boolean stopFlag = false;
     private static boolean pauseFlag = true;
-    private static boolean resetFlag =false;
-    private static boolean canGo=false;
-    private static  int a[]=new int [N];
-    private static int a2[] = new int[N];
+    private static boolean resetFlag = false;
+    private static boolean canGoFlag = false;
 
     private Main mainBoard;
     private JButton accelerateButton;
@@ -48,13 +46,78 @@ public class KruskalPanel extends JPanel {
         initPauseButton();
         initDrawGraphButton();
         initResetButton();
-        initCodes();
+        initCodes("graphics/input/KruskalCodes.txt");
 
-        initKruskalGraph("graphics/input/Tessellation.txt");
-
-        GraphicsKruskalMST mst = new GraphicsKruskalMST(graphicsEdgeWeightedGraph);
+        canGoFlag = true;
+        pauseFlag = false;
 
         new PaintThread().start();
+    }
+
+    public void algoStart(String kruskalGraphFile) {
+        initKruskalGraph(kruskalGraphFile);
+
+        Queue<WeightedLabeledEdge> mst;
+        MinPQ<WeightedLabeledEdge> pq;
+        mst = new Queue<>();
+        pq = new MinPQ<>();
+        for (WeightedLabeledEdge e : graphicsEdgeWeightedGraph.edges())
+            pq.insert(e);
+        UF uf = new UF(graphicsEdgeWeightedGraph.V());
+
+        while (true) {
+            try {
+                Thread.sleep(300);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            if (canGoFlag) {
+                // 算法的主要部分
+                while (!pq.isEmpty()) {
+                    while (pauseFlag) {
+                        try {
+                            Thread.sleep(500);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        if (stopFlag || resetFlag)
+                            break;
+                    }
+                    try {
+                        Thread.sleep(speed);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
+                    if (stopFlag || resetFlag)
+                        break;
+
+                    WeightedLabeledEdge e = pq.delMin();
+                    NumberLabeledVertex labeledV = e.eitherLabeledVertex(), labeledW = e.otherLabeledVertex(labeledV);
+                    int v = labeledV.getValue();
+                    int w = labeledW.getValue();
+                    if (!uf.connected(v, w)) {
+                        uf.union(v, w);
+                        mst.enqueue(e);
+                        labeledV.setBorderColor(NumberLabeledVertex.RED);
+                        labeledW.setBorderColor(NumberLabeledVertex.RED);
+                        e.setGraphicsColor(WeightedLabeledEdge.RED);
+                    } else {
+                        e.setGraphicsColor(WeightedLabeledEdge.GRAY);
+                    }
+                }
+
+                if (stopFlag) {
+                    stopFlag = false;
+                    canGoFlag = false;
+                    break;
+                }
+                if (resetFlag)
+                    resetFlag = false;
+                canGoFlag = false;
+            }
+        }
     }
 
     @Override
@@ -82,23 +145,6 @@ public class KruskalPanel extends JPanel {
         g2.setStroke(s);
     }
 
-    public  void swap(int a [],int j,int i){
-        int tmp = a[i];
-        a[i]=a[j];
-        a[j]=tmp;
-    }
-
-    private void pause(){
-        while(pauseFlag){
-            try {
-                Thread.sleep(200);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-
     private class PaintThread extends Thread{
         @Override
         public void run() {
@@ -116,7 +162,7 @@ public class KruskalPanel extends JPanel {
 
     private void initPanel() {
         this.setLayout(null);
-        this.setBounds(x_locate, y_locate, width, height);
+        this.setBounds(xLocate, yLocate, width, height);
         this.setBackground(Color.white);
         this.setVisible(false);
         this.setFocusable(true);
@@ -205,18 +251,7 @@ public class KruskalPanel extends JPanel {
         });
     }
 
-    private void initCodes() {
-//        codes = new Code[7];
-//
-//        codes[0]=new Code(1060,590,530,30,"Sort E edges by increasing weight");
-//        codes[1]=new Code(1060,620,530,30,"T = {}");
-//        codes[2]=new Code(1060,650,530,30,"for (i = 0; i < edgeList.length; i++)");
-//        codes[3]=new Code(1060,680,530,30,"    if adding e = edgeList[i] does not form a cycle");
-//        codes[4]=new Code(1060,710,530,30,"        add e to T");
-//        codes[5] = new Code(1060, 740, 530, 30, "    else ignore e");
-//        codes[6] = new Code(1060, 770, 530, 30, "MST = T");
-
-        String inputFileName = "graphics/input/KruskalCodes.txt";
+    private void initCodes(String inputFileName) {
         In in = new In(inputFileName);
         CodeArray codeArray = new CodeArray(in);
         codes = codeArray.codes();

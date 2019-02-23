@@ -33,6 +33,7 @@ public class Main extends JFrame{
         KruskalPanel kruskalPanel = new KruskalPanel(width, height, this);
         getContentPane().add(kruskalPanel);
         kruskalPanel.setVisible(true);
+        kruskalPanel.algoStart("graphics/input/Tessellation.txt");
     }
 
     public static void main(String[] args) {
