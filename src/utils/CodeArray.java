@@ -44,4 +44,9 @@ public class CodeArray {
     public Code[] codes() {
         return codes;
     }
+
+    public static void resetCodes(Code[] codes,int initialCodeColor) {
+        for (int i = 0; i < codes.length; i++)
+            codes[i].setColor(initialCodeColor);
+    }
 }

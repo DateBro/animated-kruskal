@@ -12,9 +12,26 @@ public class Main extends JFrame{
         this.height = height;
         this.width = width;
         setTitle("数据结构课设");
+//        setWindowsStyle();
 
         initFrame();
         showKruskalMST();
+    }
+
+    private void setWindowsStyle() {
+        UIManager.LookAndFeelInfo[] infos = UIManager.getInstalledLookAndFeels();
+        try {
+            UIManager.setLookAndFeel(infos[3].getClassName());
+            SwingUtilities.updateComponentTreeUI(Main.this);
+        } catch (IllegalAccessException e1) {
+            e1.printStackTrace();
+        } catch (InstantiationException e1) {
+            e1.printStackTrace();
+        } catch (UnsupportedLookAndFeelException e1) {
+            e1.printStackTrace();
+        } catch (ClassNotFoundException e1) {
+            e1.printStackTrace();
+        }
     }
 
     private void initFrame() {
@@ -33,7 +50,7 @@ public class Main extends JFrame{
         KruskalPanel kruskalPanel = new KruskalPanel(width, height, this);
         getContentPane().add(kruskalPanel);
         kruskalPanel.setVisible(true);
-        kruskalPanel.algoStart("graphics/input/Tessellation.txt");
+        kruskalPanel.algoStart();
     }
 
     public static void main(String[] args) {
