@@ -84,7 +84,7 @@ public class NumberLabeledVertex {
                 g2.setColor(new Color(82, 188, 105));
                 break;
             case YELLOW_2:
-                g2.setColor(new Color(254, 197, 21));
+                g2.setColor(new Color(255, 138, 39));
                 break;
             case WHITE:
                 g2.setColor(Color.WHITE);

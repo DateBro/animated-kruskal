@@ -7,8 +7,6 @@ import utils.CodeArray;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 /**
  * @author DateBro
@@ -21,10 +19,12 @@ public class KruskalPanel extends JPanel {
     private int xLocate = 0;
     private int yLocate = 0;
     private static int speed = 1000;
+    private static int bufferTime = 1000;
     private static boolean stopFlag = false;
     private static boolean pauseFlag = true;
     private static boolean resetFlag = false;
     private static boolean canGoFlag = false;
+    private boolean startFlag = false;
     private String initialGraphFile = "graphics/input/Tessellation.txt";
     private String initialCodesFile = "graphics/input/KruskalCodes.txt";
 
@@ -46,7 +46,7 @@ public class KruskalPanel extends JPanel {
         initPanel();
         initAccelerateButton();
         initDecelerateButton();
-        initPauseButton();
+        initStartOrPauseButton();
         initDrawGraphButton();
         initResetButton();
         initCodes(initialCodesFile);
@@ -66,26 +66,22 @@ public class KruskalPanel extends JPanel {
             pq.insert(e);
         UF uf = new UF(graphicsEdgeWeightedGraph.V());
 
+        while (!startFlag) {
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
         codes[0].setColor(Code.BLACK);
         codes[1].setColor(Code.BLACK);
         algoBufferShow();
 
         while (true) {
             if (canGoFlag) {
-                // 算法的主要部分
                 while (!pq.isEmpty()) {
-                    setSingleCodeColor(codes, 2, Code.BLACK, Code.GLASS_GREEN);
-                    algoBufferShow();
-
-                    while (pauseFlag) {
-                        try {
-                            Thread.sleep(100);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                        if (stopFlag || resetFlag)
-                            break;
-                    }
+                    checkPause();
                     if (stopFlag || resetFlag)
                         break;
 
@@ -96,7 +92,9 @@ public class KruskalPanel extends JPanel {
 
                     labeledV.setBorderColor(NumberLabeledVertex.YELLOW_2);
                     labeledW.setBorderColor(NumberLabeledVertex.YELLOW_2);
+                    setSingleCodeColor(codes, 2, Code.BLACK, Code.GLASS_GREEN);
                     algoBufferShow();
+                    checkPause();
 
                     if (!uf.connected(v, w)) {
                         uf.union(v, w);
@@ -104,22 +102,26 @@ public class KruskalPanel extends JPanel {
                         labeledV.setBorderColor(NumberLabeledVertex.RED);
                         labeledW.setBorderColor(NumberLabeledVertex.RED);
                         algoBufferShow();
+                        checkPause();
 
                         mst.enqueue(e);
                         e.setGraphicsColor(WeightedLabeledEdge.RED);
                         setSingleCodeColor(codes, 4, Code.BLACK, Code.GLASS_GREEN);
                         algoBufferShow();
+                        checkPause();
                     } else {
                         setSingleCodeColor(codes, 5, Code.BLACK, Code.GLASS_GREEN);
                         e.setGraphicsColor(WeightedLabeledEdge.GRAY);
                         labeledV.setBorderColor(NumberLabeledVertex.RED);
                         labeledW.setBorderColor(NumberLabeledVertex.RED);
                         algoBufferShow();
+                        checkPause();
                     }
                 }
 
                 setSingleCodeColor(codes, 6, Code.BLACK, Code.GLASS_GREEN);
                 algoBufferShow();
+                checkPause();
                 startOrPauseButton.setText("End");
 
                 if (stopFlag) {
@@ -136,9 +138,21 @@ public class KruskalPanel extends JPanel {
 
     private void algoBufferShow() {
         try {
-            Thread.sleep(speed);
+            Thread.sleep(bufferTime);
         } catch (InterruptedException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void checkPause() {
+        while (pauseFlag) {
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            if (stopFlag || resetFlag)
+                break;
         }
     }
 
@@ -202,13 +216,15 @@ public class KruskalPanel extends JPanel {
         });
     }
 
-    private void initPauseButton() {
+    private void initStartOrPauseButton() {
         startOrPauseButton = new JButton("开始");
         startOrPauseButton.setBounds(500, 825, 80, 40);
         startOrPauseButton.setContentAreaFilled(false);
         startOrPauseButton.setForeground(Color.white);
         this.add(startOrPauseButton);
         startOrPauseButton.addActionListener(e -> {
+            if (!startFlag)
+                startFlag = true;
             if (pauseFlag) {
                 pauseFlag = false;
                 startOrPauseButton.setText("暂停");
