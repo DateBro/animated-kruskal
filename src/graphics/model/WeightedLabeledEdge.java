@@ -20,7 +20,7 @@ public class WeightedLabeledEdge implements Comparable<WeightedLabeledEdge> {
 
     private final int v;
     private final int w;
-    private final double weight;
+    private int weight;
     private int graphicsColor = BLACK;
     private NumberLabeledVertex labeledV;
     private NumberLabeledVertex labeledW;
@@ -132,7 +132,7 @@ public class WeightedLabeledEdge implements Comparable<WeightedLabeledEdge> {
     }
 
     private void drawWeightLabel(Graphics2D g2, double rotateAngle, int yOffset, double x1, double y1, double x2, double y2) {
-        String str = (int) weight + "";
+        String str = weight + "";
         double xMid = Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1)) / 2;
 
         AffineTransform originalStatus = g2.getTransform();
@@ -142,8 +142,12 @@ public class WeightedLabeledEdge implements Comparable<WeightedLabeledEdge> {
         g2.setTransform(originalStatus);
     }
 
-    public double getWeight() {
+    public int getWeight() {
         return weight;
+    }
+
+    public void setWeight(int newWeight) {
+        weight = newWeight;
     }
 
     private void setPaintColor(int color, Graphics2D g2) {

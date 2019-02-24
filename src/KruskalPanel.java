@@ -20,7 +20,6 @@ public class KruskalPanel extends JPanel {
     private int yLocate = 0;
     private static int bufferTime = 800;
     private static int speed = bufferTime / 10 - 50;
-    private static boolean stopFlag = false;
     private static boolean pauseFlag = true;
     private static boolean resetFlag = false;
     private static boolean canGoFlag = false;
@@ -57,6 +56,7 @@ public class KruskalPanel extends JPanel {
         new PaintThread().start();
     }
 
+    @SuppressWarnings("Duplicates")
     public void algoStart() {
         Queue<WeightedLabeledEdge> mst;
         MinPQ<WeightedLabeledEdge> pq;
@@ -77,13 +77,19 @@ public class KruskalPanel extends JPanel {
         codes[0].setColor(Code.BLACK);
         codes[1].setColor(Code.BLACK);
         algoBufferShow();
+        if (resetFlag) {
+            resetFlag = false;
+            return;
+        }
 
         while (true) {
             if (canGoFlag) {
                 while (!pq.isEmpty()) {
                     checkPause();
-                    if (stopFlag || resetFlag)
-                        break;
+                    if (resetFlag) {
+                        resetFlag = false;
+                        return;
+                    }
 
                     WeightedLabeledEdge e = pq.delMin();
                     NumberLabeledVertex labeledV = e.eitherLabeledVertex(), labeledW = e.otherLabeledVertex(labeledV);
@@ -95,6 +101,10 @@ public class KruskalPanel extends JPanel {
                     setSingleCodeColor(codes, 2, Code.BLACK, Code.GLASS_GREEN);
                     algoBufferShow();
                     checkPause();
+                    if (resetFlag) {
+                        resetFlag = false;
+                        return;
+                    }
 
                     if (!uf.connected(v, w)) {
                         uf.union(v, w);
@@ -103,12 +113,20 @@ public class KruskalPanel extends JPanel {
                         labeledW.setBorderColor(NumberLabeledVertex.RED);
                         algoBufferShow();
                         checkPause();
+                        if (resetFlag) {
+                            resetFlag = false;
+                            return;
+                        }
 
                         mst.enqueue(e);
                         e.setGraphicsColor(WeightedLabeledEdge.RED);
                         setSingleCodeColor(codes, 4, Code.BLACK, Code.GLASS_GREEN);
                         algoBufferShow();
                         checkPause();
+                        if (resetFlag) {
+                            resetFlag = false;
+                            return;
+                        }
                     } else {
                         setSingleCodeColor(codes, 5, Code.BLACK, Code.GLASS_GREEN);
                         e.setGraphicsColor(WeightedLabeledEdge.GRAY);
@@ -116,6 +134,10 @@ public class KruskalPanel extends JPanel {
                         labeledW.setBorderColor(NumberLabeledVertex.RED);
                         algoBufferShow();
                         checkPause();
+                        if (resetFlag) {
+                            resetFlag = false;
+                            return;
+                        }
                     }
                 }
 
@@ -123,14 +145,6 @@ public class KruskalPanel extends JPanel {
                 algoBufferShow();
                 checkPause();
                 startOrPauseButton.setText("End");
-
-                if (stopFlag) {
-                    stopFlag = false;
-                    canGoFlag = false;
-                    break;
-                }
-                if (resetFlag)
-                    resetFlag = false;
                 canGoFlag = false;
             }
         }
@@ -151,8 +165,6 @@ public class KruskalPanel extends JPanel {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            if (stopFlag || resetFlag)
-                break;
         }
     }
 
@@ -236,21 +248,25 @@ public class KruskalPanel extends JPanel {
     }
 
     private void initResetButton() {
-        resetButton = new JButton("重置");
-        resetButton.setBounds(400, 825, 80, 40);
+        resetButton = new JButton("重置权值");
+        resetButton.setBounds(300, 825, 160, 40);
         resetButton.setContentAreaFilled(false);
         resetButton.setForeground(Color.white);
         this.add(resetButton);
         resetButton.addActionListener(e -> {
             resetFlag = true;
-            initKruskalGraph(initialGraphFile);
+            graphicsEdgeWeightedGraph.randomResetEdgesWeight();
+            graphicsEdgeWeightedGraph.resetVerticesColor();
+            graphicsEdgeWeightedGraph.resetEdgesColor();
             CodeArray.resetCodes(codes, Code.GLASS_GREEN);
+//            resetFlag = false;
+//            algoStart();
         });
     }
 
     private void initDrawGraphButton() {
         drawGraphButton = new JButton("绘制图表");
-        drawGraphButton.setBounds(200, 825, 160, 40);
+        drawGraphButton.setBounds(100, 825, 160, 40);
         drawGraphButton.setContentAreaFilled(false);
         drawGraphButton.setForeground(Color.white);
         this.add(drawGraphButton);

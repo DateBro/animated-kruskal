@@ -15,7 +15,7 @@ public class GraphicsEdgeWeightedGraph {
 
     private int V;
     private int E;
-    private Bag<WeightedLabeledEdge>[] adj;
+    private ArrayList<WeightedLabeledEdge>[] adj;
     private ArrayList<NumberLabeledVertex> numberLabeledVertices;
 
     public GraphicsEdgeWeightedGraph(int V) {
@@ -24,10 +24,10 @@ public class GraphicsEdgeWeightedGraph {
         }
         this.V = V;
         this.E = 0;
-        adj = (Bag<WeightedLabeledEdge>[]) new Bag[V];
+        adj = (ArrayList<WeightedLabeledEdge>[]) new ArrayList[V];
         numberLabeledVertices = new ArrayList<>();
         for (int v = 0; v < V; v++) {
-            adj[v] = new Bag<>();
+            adj[v] = new ArrayList<>();
         }
     }
 
@@ -37,10 +37,10 @@ public class GraphicsEdgeWeightedGraph {
 
         this.V = vertexList.size();
         this.E = edgeList.size();
-        adj = (Bag<WeightedLabeledEdge>[]) new Bag[V];
+        adj = (ArrayList<WeightedLabeledEdge>[]) new ArrayList[V];
         numberLabeledVertices = new ArrayList<>();
         for (int v = 0; v < V; v++) {
-            adj[v] = new Bag<>();
+            adj[v] = new ArrayList<>();
         }
 
         initVertices(vertexList);
@@ -54,10 +54,10 @@ public class GraphicsEdgeWeightedGraph {
                 throw new IllegalArgumentException("Number of vertices must be nonNegative");
             }
             this.E = 0;
-            adj = (Bag<WeightedLabeledEdge>[]) new Bag[V];
+            adj = (ArrayList<WeightedLabeledEdge>[]) new ArrayList[V];
             numberLabeledVertices = new ArrayList<>();
             for (int v = 0; v < V; v++) {
-                adj[v] = new Bag<>();
+                adj[v] = new ArrayList<>();
             }
 
             for (int i = 0; i < V; i++) {
@@ -130,9 +130,23 @@ public class GraphicsEdgeWeightedGraph {
         int w = labeledW.getValue();
         validateVertex(labeledV);
         validateVertex(labeledW);
-        adj[v].add(e);
-        adj[w].add(e);
-        E++;
+        addEdgeToList(v, w, e, labeledV);
+        addEdgeToList(w, v, e, labeledW);
+    }
+
+    private void addEdgeToList(int v, int w, WeightedLabeledEdge e, NumberLabeledVertex labeledV) {
+        boolean edgeRepeated = false;
+        for (int i = 0; i < adj[v].size(); i++) {
+            WeightedLabeledEdge vEdge = adj[v].get(i);
+            if (vEdge.otherLabeledVertex(labeledV).getValue() == w) {
+                vEdge.setWeight(e.getWeight());
+                edgeRepeated = true;
+            }
+        }
+        if (!edgeRepeated) {
+            adj[v].add(e);
+            E++;
+        }
     }
 
     public Iterable<WeightedLabeledEdge> adj(NumberLabeledVertex v) {
@@ -165,13 +179,21 @@ public class GraphicsEdgeWeightedGraph {
         return edgeBag;
     }
 
-    public WeightedLabeledEdge[] edgeArray() {
-        Bag<WeightedLabeledEdge> edgeBag = (Bag<WeightedLabeledEdge>) edges();
-        WeightedLabeledEdge[] edgeArray = new WeightedLabeledEdge[edgeBag.size()];
-        int i = 0;
-        for (WeightedLabeledEdge edge : edgeBag) {
-            edgeArray[i++] = edge;
+    public void randomResetEdgesWeight() {
+        for (WeightedLabeledEdge e : edges()) {
+            e.setWeight(StdRandom.uniform(1, 21));
+            addEdge(e);
         }
-        return edgeArray;
+    }
+
+    public void resetVerticesColor() {
+        for (NumberLabeledVertex v : numberLabeledVertices)
+            v.setBorderColor(NumberLabeledVertex.BLACK);
+    }
+
+    public void resetEdgesColor() {
+        for (int i = 0; i < adj.length; i++)
+            for (WeightedLabeledEdge edge : adj[i])
+                edge.setGraphicsColor(WeightedLabeledEdge.BLACK);
     }
 }

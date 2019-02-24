@@ -19,7 +19,6 @@ public class NumberLabeledVertex {
     public static final int YELLOW_2 = 7;
     public static final int WHITE = 8;
     private int borderColor = BLACK;
-    private int valueColor = BLACK;
 
     // x,y 代表绘制圆形时其矩形左上角坐标
     private double x, y;
@@ -44,7 +43,7 @@ public class NumberLabeledVertex {
         g2.setStroke(ovalBorderStroke);
         g2.draw(innerOval);
 
-        initPaintSetting(valueColor, g2, s);
+        initPaintSetting(borderColor, g2, s);
         Font font1 = new Font("微软雅黑", Font.PLAIN, 18);
         g2.setFont(font1);
         String strToDraw = value + "";
@@ -92,10 +91,6 @@ public class NumberLabeledVertex {
         }
     }
 
-    public void setValueColor(int valueColor) {
-        this.valueColor = valueColor;
-    }
-
     public void setBorderColor(int borderColor) {
         this.borderColor = borderColor;
     }
@@ -110,10 +105,6 @@ public class NumberLabeledVertex {
 
     public double getRadius() {
         return vertexRadius / 2;
-    }
-
-    public int getBorderColor() {
-        return borderColor;
     }
 
     public double getCenterX() {
