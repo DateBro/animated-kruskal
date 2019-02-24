@@ -58,13 +58,8 @@ public class KruskalPanel extends JPanel {
 
     @SuppressWarnings("Duplicates")
     public void algoStart() {
-        Queue<WeightedLabeledEdge> mst;
-        MinPQ<WeightedLabeledEdge> pq;
-        mst = new Queue<>();
-        pq = new MinPQ<>();
-        for (WeightedLabeledEdge e : graphicsEdgeWeightedGraph.edges())
-            pq.insert(e);
-        UF uf = new UF(graphicsEdgeWeightedGraph.V());
+        Queue<WeightedLabeledEdge> mst = new Queue<>();;
+        MinPQ<WeightedLabeledEdge> pq = new MinPQ<>();
 
         while (!startFlag) {
             try {
@@ -73,6 +68,10 @@ public class KruskalPanel extends JPanel {
                 e.printStackTrace();
             }
         }
+
+        for (WeightedLabeledEdge e : graphicsEdgeWeightedGraph.edges())
+            pq.insert(e);
+        UF uf = new UF(graphicsEdgeWeightedGraph.V());
 
         codes[0].setColor(Code.BLACK);
         codes[1].setColor(Code.BLACK);
@@ -259,7 +258,7 @@ public class KruskalPanel extends JPanel {
             graphicsEdgeWeightedGraph.resetVerticesColor();
             graphicsEdgeWeightedGraph.resetEdgesColor();
             CodeArray.resetCodes(codes, Code.GLASS_GREEN);
-//            resetFlag = false;
+            resetFlag = false;
 //            algoStart();
         });
     }
@@ -306,5 +305,9 @@ public class KruskalPanel extends JPanel {
                 }
             }
         }
+    }
+
+    public void setInitialGraphFile(String fileName) {
+        initialGraphFile = fileName;
     }
 }
