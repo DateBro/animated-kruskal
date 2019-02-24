@@ -18,8 +18,8 @@ public class KruskalPanel extends JPanel {
     private int width;
     private int xLocate = 0;
     private int yLocate = 0;
-    private static int speed = 1000;
-    private static int bufferTime = 1000;
+    private static int bufferTime = 800;
+    private static int speed = bufferTime / 10 - 50;
     private static boolean stopFlag = false;
     private static boolean pauseFlag = true;
     private static boolean resetFlag = false;
@@ -176,7 +176,7 @@ public class KruskalPanel extends JPanel {
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         Font font1 = new Font("微软雅黑", Font.BOLD, 18);
         g2.setFont(font1);
-        g2.drawString("速度 : " + (70 - speed / 10), 850, 850);
+        g2.drawString("速度 : " + speed, 850, 850);
         g2.setStroke(s);
     }
 
@@ -195,10 +195,10 @@ public class KruskalPanel extends JPanel {
         accelerateButton.setForeground(Color.white);
         this.add(accelerateButton);
         accelerateButton.addActionListener(e -> {
-            if (speed > 50) {
-                speed -= 50;
+            if (bufferTime >= 600) {
+                bufferTime -= 100;
+                speed += 10;
             }
-            System.out.println("accelerateButton now speed : " + speed);
         });
     }
 
@@ -209,10 +209,10 @@ public class KruskalPanel extends JPanel {
         decelerateButton.setForeground(Color.white);
         this.add(decelerateButton);
         decelerateButton.addActionListener(e -> {
-            if (speed < 600) {
-                speed += 50;
+            if (bufferTime <= 900) {
+                bufferTime += 100;
+                speed -= 10;
             }
-            System.out.println("decelerateButton now speed : " + speed);
         });
     }
 
