@@ -23,6 +23,7 @@ public class KruskalPanel extends JPanel {
     private static boolean pauseFlag = true;
     private static boolean resetFlag = false;
     private static boolean canGoFlag = true;
+    private static boolean stopFlag =false;
     private boolean startFlag = false;
     private String initialGraphFile = "graphics/input/Tessellation.txt";
     private String initialCodesFile = "graphics/input/KruskalCodes.txt";
@@ -32,15 +33,15 @@ public class KruskalPanel extends JPanel {
     private JButton startOrPauseButton;
     private JButton drawGraphButton;
     private JButton resetButton;
-
     private Code[] codes;
     private GraphicsEdgeWeightedGraph graphicsEdgeWeightedGraph;
+    public PaintThread algoPaintThread;
 
     public KruskalPanel(int width, int height, Main mainBoard) {
         this.mainBoard = mainBoard;
         this.height = height;
         this.width = width;
-
+        algoPaintThread = new PaintThread();
         initPanel();
         initAccelerateButton();
         initDecelerateButton();
@@ -49,8 +50,7 @@ public class KruskalPanel extends JPanel {
         initResetButton();
         initCodes(initialCodesFile);
         initKruskalGraph(initialGraphFile);
-
-        new PaintThread().start();
+        algoPaintThread.start();
     }
 
     private void algoBufferShow() {
@@ -162,18 +162,9 @@ public class KruskalPanel extends JPanel {
             resetFlag = true;
             resetGraph();
             CodeArray.resetCodes(codes, Code.GLASS_GREEN);
-            mainBoard.changeBackupPanel();
+            mainBoard.changeKruskalPanel();
+//            mainBoard.changeBackupPanel();
         });
-    }
-
-    public void resetGraph() {
-        graphicsEdgeWeightedGraph.randomResetEdgesWeight();
-        graphicsEdgeWeightedGraph.resetVerticesColor();
-        graphicsEdgeWeightedGraph.resetEdgesColor();
-    }
-
-    public void setGraphicsEdgeWeightedGraph(GraphicsEdgeWeightedGraph graph) {
-        graphicsEdgeWeightedGraph = graph;
     }
 
     private void initDrawGraphButton() {
@@ -219,7 +210,7 @@ public class KruskalPanel extends JPanel {
         }
     }
 
-    private void initFlag() {
+    public void initFlag() {
         pauseFlag = true;
         resetFlag = false;
         canGoFlag = false;
@@ -239,7 +230,6 @@ public class KruskalPanel extends JPanel {
         new PaintThread().start();
     }
 
-    @SuppressWarnings("Duplicates")
     public void algoStart() {
         Queue<WeightedLabeledEdge> mst = new Queue<>();
         MinPQ<WeightedLabeledEdge> pq = new MinPQ<>();
@@ -265,6 +255,7 @@ public class KruskalPanel extends JPanel {
         }
 
         while (true) {
+            System.out.println("algoStart");
             if (canGoFlag) {
                 while (!pq.isEmpty()) {
                     checkPause();
@@ -332,8 +323,30 @@ public class KruskalPanel extends JPanel {
         }
     }
 
+    public void setStartFlag(boolean newStartFlag) {
+        startFlag = newStartFlag;
+    }
+
+    public void setCanGoFlag(boolean newCanGoFlag) {
+        canGoFlag = newCanGoFlag;
+    }
+
+    public void setPauseFlag(boolean pauseFlag1) {
+        pauseFlag = pauseFlag1;
+    }
+
     public void updateOriginGraph(String updateFile) {
         initialGraphFile = updateFile;
         initKruskalGraph(initialGraphFile);
+    }
+
+    public void resetGraph() {
+        graphicsEdgeWeightedGraph.randomResetEdgesWeight();
+        graphicsEdgeWeightedGraph.resetVerticesColor();
+        graphicsEdgeWeightedGraph.resetEdgesColor();
+    }
+
+    public void setGraphicsEdgeWeightedGraph(GraphicsEdgeWeightedGraph graph) {
+        graphicsEdgeWeightedGraph = graph;
     }
 }

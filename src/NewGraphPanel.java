@@ -42,7 +42,7 @@ public class NewGraphPanel extends JPanel {
         initDoneButton();
         initCodes();
         reInit();
-
+        new PaintThread().start();
     }
 
     public void reInit() {
@@ -52,8 +52,8 @@ public class NewGraphPanel extends JPanel {
         currentVertex = null;
         currentValue = 0;
 
-        addMouseListener(new MouseHandler());
-        addMouseMotionListener(new MouseMotionHandler());
+        this.addMouseListener(new MouseHandler());
+        this.addMouseMotionListener(new MouseMotionHandler());
         new PaintThread().start();
     }
 

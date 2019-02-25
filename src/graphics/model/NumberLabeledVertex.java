@@ -114,7 +114,11 @@ public class NumberLabeledVertex {
     }
 
     public boolean contains(Point2D p) {
-        return innerOval.contains(p);
+        if (p == null || innerOval == null) {
+            return false;
+        } else {
+            return innerOval.contains(p);
+        }
     }
 
     public void setLocation(double newX, double newY) {

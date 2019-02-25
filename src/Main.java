@@ -7,6 +7,7 @@ import java.awt.*;
  * @author DateBro
  * @date 2019/2/22
  */
+
 public class Main extends JFrame{
     private int height, width;
     private JMenuBar menuBar;
@@ -15,7 +16,7 @@ public class Main extends JFrame{
     private JComponent nowPanel;
     private NewGraphPanel newGraphPanel;
 
-    Main(int height, int width) {
+    public Main(int height, int width) {
         this.height = height;
         this.width = width;
         setTitle("Kruskal Animation");
@@ -25,31 +26,30 @@ public class Main extends JFrame{
         initBackupPanel();
         initNewGraphPanel();
 
-        while (true){
+        while (true) {
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
             if (nowPanel == kruskalPanel) {
                 kruskalPanel.setVisible(true);
                 backupKruskalPanel.setVisible(false);
                 newGraphPanel.setVisible(false);
                 kruskalPanel.normalInit();
                 kruskalPanel.algoStart();
-            } else if (nowPanel == backupKruskalPanel) {
+            }
+            if (nowPanel == backupKruskalPanel) {
                 kruskalPanel.setVisible(false);
                 newGraphPanel.setVisible(false);
-                backupKruskalPanel.randomInit();
                 backupKruskalPanel.setVisible(true);
                 backupKruskalPanel.algoStart();
-            } else if (nowPanel == newGraphPanel) {
-                newGraphPanel.setVisible(true);
+            }
+            if (nowPanel == newGraphPanel) {
                 kruskalPanel.setVisible(false);
                 backupKruskalPanel.setVisible(false);
-                newGraphPanel.reInit();
-            } else {
-
-            }
-            try {
-                Thread.sleep(10);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+                newGraphPanel.setVisible(true);
             }
         }
     }
@@ -69,7 +69,7 @@ public class Main extends JFrame{
     private void initKruskalPanel() {
         kruskalPanel = new KruskalPanel(width, height, this);
         getContentPane().add(kruskalPanel);
-        nowPanel = kruskalPanel;
+//        nowPanel = kruskalPanel;
         kruskalPanel.setVisible(true);
     }
 
@@ -82,14 +82,31 @@ public class Main extends JFrame{
     private void initNewGraphPanel() {
         newGraphPanel = new NewGraphPanel(width, height, this);
         getContentPane().add(newGraphPanel);
+        nowPanel = newGraphPanel;
         newGraphPanel.setVisible(false);
+    }
+
+    public void changeKruskalPanel() {
+        kruskalPanel = new KruskalPanel(width, height, this);
+        kruskalPanel.randomInit();
+        kruskalPanel.setVisible(true);
+        nowPanel = kruskalPanel;
     }
 
     public void changeBackupPanel() {
         nowPanel = backupKruskalPanel;
+        backupKruskalPanel.randomInit();
+        kruskalPanel = new KruskalPanel(width, height, this);
+        kruskalPanel.setVisible(false);
+        kruskalPanel.initFlag();
+        backupKruskalPanel.setStartFlag(true);
+        backupKruskalPanel.setCanGoFlag(true);
+        backupKruskalPanel.setPauseFlag(false);
+        backupKruskalPanel.algoStart();
     }
 
     public void changeNewGraphPanel() {
+        newGraphPanel = new NewGraphPanel(width, height, this);
         nowPanel = newGraphPanel;
     }
 
