@@ -22,11 +22,10 @@ public class KruskalPanel extends JPanel {
     private static int speed = bufferTime / 10 - 50;
     private static boolean pauseFlag = true;
     private static boolean resetFlag = false;
-    private static boolean canGoFlag = false;
+    private static boolean canGoFlag = true;
     private boolean startFlag = false;
     private String initialGraphFile = "graphics/input/Tessellation.txt";
     private String initialCodesFile = "graphics/input/KruskalCodes.txt";
-
     private Main mainBoard;
     private JButton accelerateButton;
     private JButton decelerateButton;
@@ -51,102 +50,7 @@ public class KruskalPanel extends JPanel {
         initCodes(initialCodesFile);
         initKruskalGraph(initialGraphFile);
 
-        canGoFlag = true;
-
         new PaintThread().start();
-    }
-
-    @SuppressWarnings("Duplicates")
-    public void algoStart() {
-        Queue<WeightedLabeledEdge> mst = new Queue<>();;
-        MinPQ<WeightedLabeledEdge> pq = new MinPQ<>();
-
-        while (!startFlag) {
-            try {
-                Thread.sleep(50);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-
-        for (WeightedLabeledEdge e : graphicsEdgeWeightedGraph.edges())
-            pq.insert(e);
-        UF uf = new UF(graphicsEdgeWeightedGraph.V());
-
-        codes[0].setColor(Code.BLACK);
-        codes[1].setColor(Code.BLACK);
-        algoBufferShow();
-        if (resetFlag) {
-            resetFlag = false;
-            return;
-        }
-
-        while (true) {
-            if (canGoFlag) {
-                while (!pq.isEmpty()) {
-                    checkPause();
-                    if (resetFlag) {
-                        resetFlag = false;
-                        return;
-                    }
-
-                    WeightedLabeledEdge e = pq.delMin();
-                    NumberLabeledVertex labeledV = e.eitherLabeledVertex(), labeledW = e.otherLabeledVertex(labeledV);
-                    int v = labeledV.getValue();
-                    int w = labeledW.getValue();
-
-                    labeledV.setBorderColor(NumberLabeledVertex.YELLOW_2);
-                    labeledW.setBorderColor(NumberLabeledVertex.YELLOW_2);
-                    setSingleCodeColor(codes, 2, Code.BLACK, Code.GLASS_GREEN);
-                    algoBufferShow();
-                    checkPause();
-                    if (resetFlag) {
-                        resetFlag = false;
-                        return;
-                    }
-
-                    if (!uf.connected(v, w)) {
-                        uf.union(v, w);
-                        setSingleCodeColor(codes, 3, Code.BLACK, Code.GLASS_GREEN);
-                        labeledV.setBorderColor(NumberLabeledVertex.RED);
-                        labeledW.setBorderColor(NumberLabeledVertex.RED);
-                        algoBufferShow();
-                        checkPause();
-                        if (resetFlag) {
-                            resetFlag = false;
-                            return;
-                        }
-
-                        mst.enqueue(e);
-                        e.setGraphicsColor(WeightedLabeledEdge.RED);
-                        setSingleCodeColor(codes, 4, Code.BLACK, Code.GLASS_GREEN);
-                        algoBufferShow();
-                        checkPause();
-                        if (resetFlag) {
-                            resetFlag = false;
-                            return;
-                        }
-                    } else {
-                        setSingleCodeColor(codes, 5, Code.BLACK, Code.GLASS_GREEN);
-                        e.setGraphicsColor(WeightedLabeledEdge.GRAY);
-                        labeledV.setBorderColor(NumberLabeledVertex.RED);
-                        labeledW.setBorderColor(NumberLabeledVertex.RED);
-                        algoBufferShow();
-                        checkPause();
-                        if (resetFlag) {
-                            resetFlag = false;
-                            return;
-                        }
-                    }
-                }
-
-                setSingleCodeColor(codes, 6, Code.BLACK, Code.GLASS_GREEN);
-                algoBufferShow();
-                checkPause();
-                startOrPauseButton.setText("End");
-                canGoFlag = false;
-            }
-        }
     }
 
     private void algoBufferShow() {
@@ -236,6 +140,8 @@ public class KruskalPanel extends JPanel {
         startOrPauseButton.addActionListener(e -> {
             if (!startFlag)
                 startFlag = true;
+            if (!canGoFlag)
+                startOrPauseButton.setText("开始");
             if (pauseFlag) {
                 pauseFlag = false;
                 startOrPauseButton.setText("暂停");
@@ -254,13 +160,16 @@ public class KruskalPanel extends JPanel {
         this.add(resetButton);
         resetButton.addActionListener(e -> {
             resetFlag = true;
-            graphicsEdgeWeightedGraph.randomResetEdgesWeight();
-            graphicsEdgeWeightedGraph.resetVerticesColor();
-            graphicsEdgeWeightedGraph.resetEdgesColor();
+            resetGraph();
             CodeArray.resetCodes(codes, Code.GLASS_GREEN);
-            resetFlag = false;
-//            algoStart();
+            mainBoard.changeBackupPanel();
         });
+    }
+
+    public void resetGraph() {
+        graphicsEdgeWeightedGraph.randomResetEdgesWeight();
+        graphicsEdgeWeightedGraph.resetVerticesColor();
+        graphicsEdgeWeightedGraph.resetEdgesColor();
     }
 
     private void initDrawGraphButton() {
@@ -309,5 +218,118 @@ public class KruskalPanel extends JPanel {
 
     public void setInitialGraphFile(String fileName) {
         initialGraphFile = fileName;
+    }
+
+    private void initFlag() {
+        pauseFlag = true;
+        resetFlag = false;
+        canGoFlag = false;
+        startFlag = false;
+    }
+
+    public void randomInit() {
+        resetGraph();
+        initFlag();
+        canGoFlag = true;
+        new PaintThread().start();
+    }
+
+    public void normalInit() {
+        initKruskalGraph(initialGraphFile);
+        canGoFlag = true;
+        new PaintThread().start();
+    }
+
+    @SuppressWarnings("Duplicates")
+    public void algoStart() {
+        Queue<WeightedLabeledEdge> mst = new Queue<>();
+        MinPQ<WeightedLabeledEdge> pq = new MinPQ<>();
+
+        while (!startFlag) {
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        for (WeightedLabeledEdge e : graphicsEdgeWeightedGraph.edges())
+            pq.insert(e);
+        UF uf = new UF(graphicsEdgeWeightedGraph.V());
+
+        codes[0].setColor(Code.BLACK);
+        codes[1].setColor(Code.BLACK);
+        algoBufferShow();
+        if (resetFlag) {
+            resetFlag = false;
+            return;
+        }
+
+        while (true) {
+            if (canGoFlag) {
+                while (!pq.isEmpty()) {
+                    checkPause();
+                    if (resetFlag) {
+                        resetFlag = false;
+                        return;
+                    }
+
+                    WeightedLabeledEdge e = pq.delMin();
+                    NumberLabeledVertex labeledV = e.eitherLabeledVertex(), labeledW = e.otherLabeledVertex(labeledV);
+                    int v = labeledV.getValue();
+                    int w = labeledW.getValue();
+
+                    labeledV.setBorderColor(NumberLabeledVertex.YELLOW_2);
+                    labeledW.setBorderColor(NumberLabeledVertex.YELLOW_2);
+                    setSingleCodeColor(codes, 2, Code.BLACK, Code.GLASS_GREEN);
+                    algoBufferShow();
+                    checkPause();
+                    if (resetFlag) {
+                        resetFlag = false;
+                        return;
+                    }
+
+                    if (!uf.connected(v, w)) {
+                        uf.union(v, w);
+                        setSingleCodeColor(codes, 3, Code.BLACK, Code.GLASS_GREEN);
+                        labeledV.setBorderColor(NumberLabeledVertex.RED);
+                        labeledW.setBorderColor(NumberLabeledVertex.RED);
+                        algoBufferShow();
+                        checkPause();
+                        if (resetFlag) {
+                            resetFlag = false;
+                            return;
+                        }
+
+                        mst.enqueue(e);
+                        e.setGraphicsColor(WeightedLabeledEdge.RED);
+                        setSingleCodeColor(codes, 4, Code.BLACK, Code.GLASS_GREEN);
+                        algoBufferShow();
+                        checkPause();
+                        if (resetFlag) {
+                            resetFlag = false;
+                            return;
+                        }
+                    } else {
+                        setSingleCodeColor(codes, 5, Code.BLACK, Code.GLASS_GREEN);
+                        e.setGraphicsColor(WeightedLabeledEdge.GRAY);
+                        labeledV.setBorderColor(NumberLabeledVertex.RED);
+                        labeledW.setBorderColor(NumberLabeledVertex.RED);
+                        algoBufferShow();
+                        checkPause();
+                        if (resetFlag) {
+                            resetFlag = false;
+                            return;
+                        }
+                    }
+                }
+
+                setSingleCodeColor(codes, 6, Code.BLACK, Code.GLASS_GREEN);
+                algoBufferShow();
+                checkPause();
+                startOrPauseButton.setText("End");
+                canGoFlag = false;
+            }
+        }
     }
 }

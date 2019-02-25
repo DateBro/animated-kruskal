@@ -1,7 +1,5 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 /**
  * @author DateBro
@@ -11,6 +9,8 @@ public class Main extends JFrame{
     private int height, width;
     private JMenuBar menuBar;
     private KruskalPanel kruskalPanel;
+    private KruskalPanel backupKruskalPanel;
+    private JComponent nowPanel;
 
     Main(int height, int width) {
         this.height = height;
@@ -18,7 +18,27 @@ public class Main extends JFrame{
         setTitle("数据结构课设");
 
         initFrame();
-        showKruskalMST();
+        initKruskalPanel();
+        initBackupPanel();
+
+        while (true){
+            if (nowPanel == kruskalPanel) {
+                kruskalPanel.setVisible(true);
+                backupKruskalPanel.setVisible(false);
+                kruskalPanel.normalInit();
+                kruskalPanel.algoStart();
+            } else if (nowPanel == backupKruskalPanel) {
+                kruskalPanel.setVisible(false);
+                backupKruskalPanel.randomInit();
+                backupKruskalPanel.setVisible(true);
+                backupKruskalPanel.algoStart();
+            }
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private void initFrame() {
@@ -33,11 +53,31 @@ public class Main extends JFrame{
         setVisible(true);
     }
 
-    public void showKruskalMST() {
+    private void initKruskalPanel() {
         kruskalPanel = new KruskalPanel(width, height, this);
         getContentPane().add(kruskalPanel);
+        nowPanel = kruskalPanel;
         kruskalPanel.setVisible(true);
-        kruskalPanel.algoStart();
+    }
+
+    private void initBackupPanel() {
+        backupKruskalPanel = new KruskalPanel(width, height, this);
+        getContentPane().add(backupKruskalPanel);
+        backupKruskalPanel.setVisible(false);
+    }
+
+    public void changeBackupPanel() {
+        nowPanel = backupKruskalPanel;
+    }
+
+    @Override
+    public int getWidth() {
+        return width;
+    }
+
+    @Override
+    public int getHeight() {
+        return height;
     }
 
     private void initGraphMenu() {
@@ -63,6 +103,10 @@ public class Main extends JFrame{
         graphChoices.add(k5);
         graphChoices.add(CP_4_14);
         graphChoices.add(CP_4_10);
+    }
+
+    public KruskalPanel getKruskalPanel() {
+        return kruskalPanel;
     }
 
     public static void main(String[] args) {
