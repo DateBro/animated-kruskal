@@ -167,7 +167,7 @@ public class GraphicsEdgeWeightedGraph {
                     edgeBag.add(e);
                 }
 
-                // add only one copy of each self loop (self loops will be consecutive)
+                // addVertex only one copy of each self loop (self loops will be consecutive)
                 else if (e.otherLabeledVertex(v).getValue() == v.getValue()) {
                     if (selfLoops % 2 == 0) {
                         edgeBag.add(e);

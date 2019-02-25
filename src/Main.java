@@ -1,3 +1,5 @@
+import graphics.model.GraphicsEdgeWeightedGraph;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -11,6 +13,7 @@ public class Main extends JFrame{
     private KruskalPanel kruskalPanel;
     private KruskalPanel backupKruskalPanel;
     private JComponent nowPanel;
+    private NewGraphPanel newGraphPanel;
 
     Main(int height, int width) {
         this.height = height;
@@ -20,18 +23,25 @@ public class Main extends JFrame{
         initFrame();
         initKruskalPanel();
         initBackupPanel();
+        initNewGraphPanel();
 
         while (true){
             if (nowPanel == kruskalPanel) {
                 kruskalPanel.setVisible(true);
                 backupKruskalPanel.setVisible(false);
+                newGraphPanel.setVisible(false);
                 kruskalPanel.normalInit();
                 kruskalPanel.algoStart();
             } else if (nowPanel == backupKruskalPanel) {
                 kruskalPanel.setVisible(false);
+                newGraphPanel.setVisible(false);
                 backupKruskalPanel.randomInit();
                 backupKruskalPanel.setVisible(true);
                 backupKruskalPanel.algoStart();
+            } else if (nowPanel == newGraphPanel) {
+                kruskalPanel.setVisible(false);
+                backupKruskalPanel.setVisible(false);
+                newGraphPanel.setVisible(true);
             }
             try {
                 Thread.sleep(10);
@@ -56,7 +66,7 @@ public class Main extends JFrame{
     private void initKruskalPanel() {
         kruskalPanel = new KruskalPanel(width, height, this);
         getContentPane().add(kruskalPanel);
-        nowPanel = kruskalPanel;
+//        nowPanel = kruskalPanel;
         kruskalPanel.setVisible(true);
     }
 
@@ -66,7 +76,22 @@ public class Main extends JFrame{
         backupKruskalPanel.setVisible(false);
     }
 
+    private void initNewGraphPanel() {
+        newGraphPanel = new NewGraphPanel(width, height, this);
+        getContentPane().add(newGraphPanel);
+        newGraphPanel.setVisible(false);
+        nowPanel = newGraphPanel;
+    }
+
     public void changeBackupPanel() {
+        nowPanel = backupKruskalPanel;
+    }
+
+    public void changeNewGraphPanel() {
+        nowPanel = newGraphPanel;
+    }
+
+    public void changeBackupPanel(GraphicsEdgeWeightedGraph graph) {
         nowPanel = backupKruskalPanel;
     }
 

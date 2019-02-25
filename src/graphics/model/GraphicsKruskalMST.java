@@ -33,7 +33,7 @@ public class GraphicsKruskalMST {
         if (!uf.connected(v, w)) {
             // merge v and w components
             uf.union(v, w);
-            // add edge e to mst
+            // addVertex edge e to mst
             mst.enqueue(e);
             labeledV.setBorderColor(NumberLabeledVertex.RED);
             labeledW.setBorderColor(NumberLabeledVertex.RED);

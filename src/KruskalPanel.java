@@ -178,10 +178,7 @@ public class KruskalPanel extends JPanel {
         drawGraphButton.setContentAreaFilled(false);
         drawGraphButton.setForeground(Color.white);
         this.add(drawGraphButton);
-        drawGraphButton.addActionListener(e -> {
-            // 绘制图表相关
-            System.out.println("绘制图表");
-        });
+        drawGraphButton.addActionListener(e -> mainBoard.changeNewGraphPanel());
     }
 
     private void initCodes(String inputFileName) {

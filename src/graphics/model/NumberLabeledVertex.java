@@ -2,6 +2,7 @@ package graphics.model;
 
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
+import java.awt.geom.Point2D;
 
 /**
  * @author DateBro
@@ -19,6 +20,7 @@ public class NumberLabeledVertex {
     public static final int YELLOW_2 = 7;
     public static final int WHITE = 8;
     private int borderColor = BLACK;
+    private Ellipse2D innerOval;
 
     // x,y 代表绘制圆形时其矩形左上角坐标
     private double x, y;
@@ -38,7 +40,7 @@ public class NumberLabeledVertex {
         Stroke s = g2.getStroke();
 
         initPaintSetting(borderColor, g2, s);
-        Ellipse2D innerOval = new Ellipse2D.Double(x, y, vertexRadius, vertexRadius);
+        innerOval = new Ellipse2D.Double(x, y, vertexRadius, vertexRadius);
         Stroke ovalBorderStroke = new BasicStroke(3.0f);
         g2.setStroke(ovalBorderStroke);
         g2.draw(innerOval);
@@ -95,10 +97,6 @@ public class NumberLabeledVertex {
         this.borderColor = borderColor;
     }
 
-    public void setValue(int value) {
-        this.value = value;
-    }
-
     public int getValue() {
         return value;
     }
@@ -113,6 +111,18 @@ public class NumberLabeledVertex {
 
     public double getCenterY() {
         return centerY;
+    }
+
+    public boolean contains(Point2D p) {
+        return innerOval.contains(p);
+    }
+
+    public void setLocation(double newX, double newY) {
+        this.centerX = newX;
+        this.centerY = newY;
+
+        this.x = centerX - vertexRadius / 2;
+        this.y = centerY - vertexRadius / 2;
     }
 }
 
