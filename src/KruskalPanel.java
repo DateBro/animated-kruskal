@@ -182,7 +182,9 @@ public class KruskalPanel extends JPanel {
         drawGraphButton.setContentAreaFilled(false);
         drawGraphButton.setForeground(Color.white);
         this.add(drawGraphButton);
-        drawGraphButton.addActionListener(e -> mainBoard.changeNewGraphPanel());
+        drawGraphButton.addActionListener(e -> {
+            mainBoard.changeNewGraphPanel();
+        });
     }
 
     private void initCodes(String inputFileName) {
@@ -215,10 +217,6 @@ public class KruskalPanel extends JPanel {
                 }
             }
         }
-    }
-
-    public void setInitialGraphFile(String fileName) {
-        initialGraphFile = fileName;
     }
 
     private void initFlag() {
@@ -332,5 +330,10 @@ public class KruskalPanel extends JPanel {
                 canGoFlag = false;
             }
         }
+    }
+
+    public void updateOriginGraph(String updateFile) {
+        initialGraphFile = updateFile;
+        initKruskalGraph(initialGraphFile);
     }
 }

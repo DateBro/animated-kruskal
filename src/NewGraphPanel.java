@@ -1,8 +1,11 @@
+import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.Stack;
 import edu.princeton.cs.algs4.StdRandom;
+import graphics.model.Code;
 import graphics.model.GraphicsEdgeWeightedGraph;
 import graphics.model.NumberLabeledVertex;
 import graphics.model.WeightedLabeledEdge;
+import utils.CodeArray;
 
 import javax.swing.*;
 import java.awt.*;
@@ -25,11 +28,11 @@ public class NewGraphPanel extends JPanel {
     private Main mainBoard;
     private JButton doneButton;
     private Stack<NumberLabeledVertex> selectedVertex;
-
     private ArrayList<NumberLabeledVertex> vertexArrayList;
     private NumberLabeledVertex currentVertex;
     private ArrayList<WeightedLabeledEdge> edgeArrayList;
     private int currentValue;
+    private Code[] codes;
 
     public NewGraphPanel(int width, int height, Main mainBoard) {
         this.mainBoard = mainBoard;
@@ -37,7 +40,12 @@ public class NewGraphPanel extends JPanel {
         this.width = width;
         initPanel();
         initDoneButton();
+        initCodes();
+        reInit();
 
+    }
+
+    public void reInit() {
         vertexArrayList = new ArrayList<>();
         edgeArrayList = new ArrayList<>();
         selectedVertex = new Stack<>();
@@ -46,11 +54,12 @@ public class NewGraphPanel extends JPanel {
 
         addMouseListener(new MouseHandler());
         addMouseMotionListener(new MouseMotionHandler());
+        new PaintThread().start();
     }
 
     private void initPanel() {
         this.setLayout(null);
-        this.setBounds(xLocate, yLocate, 1060, height);
+        this.setBounds(xLocate, yLocate, width, height);
         this.setBackground(Color.white);
         this.setVisible(false);
         this.setFocusable(true);
@@ -68,6 +77,12 @@ public class NewGraphPanel extends JPanel {
         });
     }
 
+    private void initCodes() {
+        In in = new In("graphics/input/KruskalCodes.txt");
+        CodeArray codeArray = new CodeArray(in);
+        codes = codeArray.codes();
+    }
+
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -77,6 +92,8 @@ public class NewGraphPanel extends JPanel {
             v.paintVertex(g2);
         for (WeightedLabeledEdge e : edgeArrayList)
             e.paintEdge(g2);
+        for (Code code : codes)
+            code.paintCode(g2);
 
         Stroke s = g2.getStroke();
         g2.setColor(Color.BLACK);
@@ -114,10 +131,13 @@ public class NewGraphPanel extends JPanel {
         @Override
         public void mousePressed(MouseEvent event) {
             currentVertex = find(event.getPoint());
-            if (currentVertex == null)
+            if (currentVertex == null) {
                 addVertex(event.getPoint());
-            else
+                while (!selectedVertex.isEmpty())
+                    selectedVertex.pop();
+            } else {
                 setSelectedVertex(currentVertex);
+            }
         }
 
         @Override
@@ -170,6 +190,21 @@ public class NewGraphPanel extends JPanel {
                 setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
             } else {
                 setCursor(Cursor.getDefaultCursor());
+            }
+        }
+    }
+
+    private class PaintThread extends Thread {
+        @Override
+        public void run() {
+            while (true) {
+                repaint();
+                try {
+                    Thread.sleep(50);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                    break;
+                }
             }
         }
     }

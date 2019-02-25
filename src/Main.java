@@ -18,7 +18,7 @@ public class Main extends JFrame{
     Main(int height, int width) {
         this.height = height;
         this.width = width;
-        setTitle("数据结构课设");
+        setTitle("Kruskal Animation");
 
         initFrame();
         initKruskalPanel();
@@ -39,9 +39,12 @@ public class Main extends JFrame{
                 backupKruskalPanel.setVisible(true);
                 backupKruskalPanel.algoStart();
             } else if (nowPanel == newGraphPanel) {
+                newGraphPanel.setVisible(true);
                 kruskalPanel.setVisible(false);
                 backupKruskalPanel.setVisible(false);
-                newGraphPanel.setVisible(true);
+                newGraphPanel.reInit();
+            } else {
+
             }
             try {
                 Thread.sleep(10);
@@ -66,7 +69,7 @@ public class Main extends JFrame{
     private void initKruskalPanel() {
         kruskalPanel = new KruskalPanel(width, height, this);
         getContentPane().add(kruskalPanel);
-//        nowPanel = kruskalPanel;
+        nowPanel = kruskalPanel;
         kruskalPanel.setVisible(true);
     }
 
@@ -80,7 +83,6 @@ public class Main extends JFrame{
         newGraphPanel = new NewGraphPanel(width, height, this);
         getContentPane().add(newGraphPanel);
         newGraphPanel.setVisible(false);
-        nowPanel = newGraphPanel;
     }
 
     public void changeBackupPanel() {
@@ -118,21 +120,32 @@ public class Main extends JFrame{
         JMenuItem CP_4_14 = new JMenuItem("CP_4.14");
         JMenuItem CP_4_10 = new JMenuItem("CP_4.10");
 
-        Tessellation.addActionListener(e -> kruskalPanel.setInitialGraphFile("graphics/input/Tessellation.txt"));
-        Rail.addActionListener(e -> kruskalPanel.setInitialGraphFile("graphics/input/Rail.txt"));
-        k5.addActionListener(e -> kruskalPanel.setInitialGraphFile("graphics/input/k5.txt"));
-        CP_4_14.addActionListener(e -> kruskalPanel.setInitialGraphFile("graphics/input/CP_4.14.txt"));
-        CP_4_10.addActionListener(e -> kruskalPanel.setInitialGraphFile("graphics/input/CP_4.10.txt"));
+        Tessellation.addActionListener(e -> {
+            backupKruskalPanel.updateOriginGraph("graphics/input/Tessellation.txt");
+            this.changeBackupPanel();
+        });
+        Rail.addActionListener(e -> {
+            backupKruskalPanel.updateOriginGraph("graphics/input/Rail.txt");
+            this.changeBackupPanel();
+        });
+        k5.addActionListener(e -> {
+            backupKruskalPanel.updateOriginGraph("graphics/input/k5.txt");
+            this.changeBackupPanel();
+        });
+        CP_4_14.addActionListener(e -> {
+            backupKruskalPanel.updateOriginGraph("graphics/input/CP_4.14.txt");
+            this.changeBackupPanel();
+        });
+        CP_4_10.addActionListener(e -> {
+            backupKruskalPanel.updateOriginGraph("graphics/input/CP_4.10.txt");
+            this.changeBackupPanel();
+        });
 
         graphChoices.add(Tessellation);
         graphChoices.add(Rail);
         graphChoices.add(k5);
         graphChoices.add(CP_4_14);
         graphChoices.add(CP_4_10);
-    }
-
-    public KruskalPanel getKruskalPanel() {
-        return kruskalPanel;
     }
 
     public static void main(String[] args) {
