@@ -92,6 +92,7 @@ public class Main extends JFrame{
     }
 
     public void changeBackupPanel(GraphicsEdgeWeightedGraph graph) {
+        backupKruskalPanel.setGraphicsEdgeWeightedGraph(graph);
         nowPanel = backupKruskalPanel;
     }
 

@@ -1,4 +1,6 @@
 import edu.princeton.cs.algs4.Stack;
+import edu.princeton.cs.algs4.StdRandom;
+import graphics.model.GraphicsEdgeWeightedGraph;
 import graphics.model.NumberLabeledVertex;
 import graphics.model.WeightedLabeledEdge;
 
@@ -61,7 +63,8 @@ public class NewGraphPanel extends JPanel {
         doneButton.setForeground(Color.white);
         this.add(doneButton);
         doneButton.addActionListener(e -> {
-            mainBoard.changeBackupPanel();
+            GraphicsEdgeWeightedGraph graphicsEdgeWeightedGraph = new GraphicsEdgeWeightedGraph(vertexArrayList, edgeArrayList);
+            mainBoard.changeBackupPanel(graphicsEdgeWeightedGraph);
         });
     }
 
@@ -133,6 +136,13 @@ public class NewGraphPanel extends JPanel {
 
                 selectedVertex.push(vertex);
                 vertex.setBorderColor(NumberLabeledVertex.RED);
+                repaint();
+            } else if (selectedVertex.size() == 1) {
+                NumberLabeledVertex vertex1 = selectedVertex.pop();
+                WeightedLabeledEdge edge = new WeightedLabeledEdge(vertex, vertex1, StdRandom.uniform(1, 21));
+                edgeArrayList.add(edge);
+                vertex1.setBorderColor(NumberLabeledVertex.BLACK);
+
                 repaint();
             } else {
                 selectedVertex.push(vertex);

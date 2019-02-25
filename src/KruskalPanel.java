@@ -172,6 +172,10 @@ public class KruskalPanel extends JPanel {
         graphicsEdgeWeightedGraph.resetEdgesColor();
     }
 
+    public void setGraphicsEdgeWeightedGraph(GraphicsEdgeWeightedGraph graph) {
+        graphicsEdgeWeightedGraph = graph;
+    }
+
     private void initDrawGraphButton() {
         drawGraphButton = new JButton("绘制图表");
         drawGraphButton.setBounds(100, 825, 160, 40);
