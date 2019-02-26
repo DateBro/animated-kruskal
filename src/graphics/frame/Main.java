@@ -13,44 +13,58 @@ import java.awt.*;
  * @date 2019/2/22
  */
 
-public class FixedGraphFrame extends JFrame{
+public class Main extends JFrame{
     private int height, width;
     private JMenuBar menuBar;
     private KruskalPanel kruskalPanel;
     private KruskalPanel backupKruskalPanel;
     private JComponent nowPanel;
+    private NewGraphPanel newGraphPanel;
     private boolean nomoreChange = false;
 
-    public FixedGraphFrame(int height, int width) {
+    public Main(int height, int width) {
         this.height = height;
         this.width = width;
         setTitle("Kruskal Animation");
+
         initFrame();
         initKruskalPanel();
         initBackupPanel();
+        initNewGraphPanel();
 
         while (true) {
+            StdOut.println("choices");
             try {
-                Thread.sleep(100);
+                Thread.sleep(50);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-
             if (nomoreChange)
                 continue;
 
             if (nowPanel == kruskalPanel) {
                 kruskalPanel.setVisible(true);
                 backupKruskalPanel.setVisible(false);
+                newGraphPanel.setVisible(false);
                 kruskalPanel.normalInit();
                 nomoreChange = true;
                 kruskalPanel.algoStart();
             }
             if (nowPanel == backupKruskalPanel) {
                 kruskalPanel.setVisible(false);
+                newGraphPanel.setVisible(false);
+                backupKruskalPanel.stopFlag = false;
+                backupKruskalPanel.resetGraph();
                 backupKruskalPanel.setVisible(true);
                 nomoreChange = true;
                 backupKruskalPanel.algoStart();
+            }
+            if (nowPanel == newGraphPanel) {
+                kruskalPanel.setVisible(false);
+                backupKruskalPanel.setVisible(false);
+                newGraphPanel.setVisible(true);
+                nomoreChange = true;
+                newGraphPanel.waitDone();
             }
         }
     }
@@ -70,8 +84,7 @@ public class FixedGraphFrame extends JFrame{
     private void initKruskalPanel() {
         kruskalPanel = new KruskalPanel(width, height, this);
         getContentPane().add(kruskalPanel);
-        nowPanel = kruskalPanel;
-        kruskalPanel.drawGraphButton.setVisible(false);
+//        nowPanel = kruskalPanel;
         kruskalPanel.setVisible(true);
     }
 
@@ -79,6 +92,13 @@ public class FixedGraphFrame extends JFrame{
         backupKruskalPanel = new KruskalPanel(width, height, this);
         getContentPane().add(backupKruskalPanel);
         backupKruskalPanel.setVisible(false);
+    }
+
+    private void initNewGraphPanel() {
+        newGraphPanel = new NewGraphPanel(width, height, this);
+        getContentPane().add(newGraphPanel);
+        nowPanel = newGraphPanel;
+        newGraphPanel.setVisible(false);
     }
 
     public void changeKruskalPanel() {
@@ -91,13 +111,19 @@ public class FixedGraphFrame extends JFrame{
     public void changeBackupPanel() {
         nowPanel = backupKruskalPanel;
         backupKruskalPanel.randomInit();
-        kruskalPanel = new KruskalPanel(width, height, this);
-        kruskalPanel.setVisible(false);
-        kruskalPanel.initFlag();
+        kruskalPanel.stopFlag = true;
+        backupKruskalPanel.stopFlag = true;
         backupKruskalPanel.setStartFlag(true);
         backupKruskalPanel.setCanGoFlag(true);
         backupKruskalPanel.setPauseFlag(false);
-        backupKruskalPanel.algoStart();
+        backupKruskalPanel.resetFlag = false;
+        nomoreChange = false;
+    }
+
+    public void changeNewGraphPanel() {
+        newGraphPanel.reInit();
+        nomoreChange = false;
+        nowPanel = newGraphPanel;
     }
 
     public void changeBackupPanel(GraphicsEdgeWeightedGraph graph) {
@@ -157,7 +183,6 @@ public class FixedGraphFrame extends JFrame{
     }
 
     public static void main(String[] args) {
-        new DrawOwnGraphFrame(920, 1600);
+        new Main(920, 1600);
     }
 }
-

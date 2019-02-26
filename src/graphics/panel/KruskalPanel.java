@@ -4,7 +4,7 @@ import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.MinPQ;
 import edu.princeton.cs.algs4.Queue;
 import edu.princeton.cs.algs4.UF;
-import graphics.frame.DrawOwnGraphFrame;
+import graphics.frame.Main;
 import graphics.model.*;
 import utils.CodeArray;
 
@@ -30,7 +30,7 @@ public class KruskalPanel extends JPanel {
     public boolean startFlag = false;
     private String initialGraphFile = "graphics/input/Tessellation.txt";
     private String initialCodesFile = "graphics/input/KruskalCodes.txt";
-    private JFrame drawOwnGraphFrameBoard;
+    private Main mainBoard;
     private JButton accelerateButton;
     private JButton decelerateButton;
     private JButton startOrPauseButton;
@@ -40,8 +40,8 @@ public class KruskalPanel extends JPanel {
     private GraphicsEdgeWeightedGraph graphicsEdgeWeightedGraph;
     public PaintThread algoPaintThread;
 
-    public KruskalPanel(int width, int height, JFrame drawOwnGraphFrameBoard) {
-        this.drawOwnGraphFrameBoard = drawOwnGraphFrameBoard;
+    public KruskalPanel(int width, int height, Main mainBoard) {
+        this.mainBoard = mainBoard;
         this.height = height;
         this.width = width;
         algoPaintThread = new PaintThread();
@@ -155,21 +155,6 @@ public class KruskalPanel extends JPanel {
         });
     }
 
-    private void initResetButton() {
-        resetButton = new JButton("重置权值");
-        resetButton.setBounds(300, 825, 160, 40);
-        resetButton.setContentAreaFilled(false);
-        resetButton.setForeground(Color.white);
-        this.add(resetButton);
-        resetButton.addActionListener(e -> {
-            resetFlag = true;
-            resetGraph();
-            CodeArray.resetCodes(codes, Code.GLASS_GREEN);
-//            drawOwnGraphFrameBoard.changeKruskalPanel();
-//            drawOwnGraphFrameBoard.changeBackupPanel();
-        });
-    }
-
     private void initDrawGraphButton() {
         drawGraphButton = new JButton("绘制图表");
         drawGraphButton.setBounds(100, 825, 160, 40);
@@ -178,7 +163,19 @@ public class KruskalPanel extends JPanel {
         this.add(drawGraphButton);
         drawGraphButton.addActionListener(e -> {
             stopFlag = true;
-//            drawOwnGraphFrameBoard.changeNewGraphPanel();
+            mainBoard.changeNewGraphPanel();
+        });
+    }
+
+    private void initResetButton() {
+        resetButton = new JButton("重置权值");
+        resetButton.setBounds(300, 825, 160, 40);
+        resetButton.setContentAreaFilled(false);
+        resetButton.setForeground(Color.white);
+        this.add(resetButton);
+        resetButton.addActionListener(e -> {
+            resetFlag = true;
+            mainBoard.changeBackupPanel();
         });
     }
 
@@ -235,6 +232,7 @@ public class KruskalPanel extends JPanel {
     }
 
     public void algoStart() {
+        randomInit();
         Queue<WeightedLabeledEdge> mst = new Queue<>();
         MinPQ<WeightedLabeledEdge> pq = new MinPQ<>();
 

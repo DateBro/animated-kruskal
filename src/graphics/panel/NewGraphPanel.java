@@ -3,7 +3,7 @@ package graphics.panel;
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.Stack;
 import edu.princeton.cs.algs4.StdRandom;
-import graphics.frame.DrawOwnGraphFrame;
+import graphics.frame.Main;
 import graphics.model.Code;
 import graphics.model.GraphicsEdgeWeightedGraph;
 import graphics.model.NumberLabeledVertex;
@@ -28,7 +28,7 @@ public class NewGraphPanel extends JPanel {
     private int width;
     private int xLocate = 0;
     private int yLocate = 0;
-    private JFrame drawOwnGraphFrameBoard;
+    private Main mainBoard;
     private JButton doneButton;
     private Stack<NumberLabeledVertex> selectedVertex;
     private ArrayList<NumberLabeledVertex> vertexArrayList;
@@ -38,8 +38,8 @@ public class NewGraphPanel extends JPanel {
     private Code[] codes;
     public boolean doneFlag = false;
 
-    public NewGraphPanel(int width, int height, JFrame drawOwnGraphFrameBoard) {
-        this.drawOwnGraphFrameBoard = drawOwnGraphFrameBoard;
+    public NewGraphPanel(int width, int height, Main mainBoard) {
+        this.mainBoard = mainBoard;
         this.height = height;
         this.width = width;
         initPanel();
@@ -90,7 +90,7 @@ public class NewGraphPanel extends JPanel {
         doneButton.addActionListener(e -> {
             doneFlag = true;
             GraphicsEdgeWeightedGraph graphicsEdgeWeightedGraph = new GraphicsEdgeWeightedGraph(vertexArrayList, edgeArrayList);
-//            drawOwnGraphFrameBoard.changeBackupPanel(graphicsEdgeWeightedGraph);
+            mainBoard.changeBackupPanel(graphicsEdgeWeightedGraph);
         });
     }
 
