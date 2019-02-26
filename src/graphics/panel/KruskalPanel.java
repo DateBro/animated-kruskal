@@ -1,7 +1,10 @@
+package graphics.panel;
+
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.MinPQ;
 import edu.princeton.cs.algs4.Queue;
 import edu.princeton.cs.algs4.UF;
+import graphics.frame.DrawOwnGraphFrame;
 import graphics.model.*;
 import utils.CodeArray;
 
@@ -20,25 +23,25 @@ public class KruskalPanel extends JPanel {
     private int yLocate = 0;
     private static int bufferTime = 800;
     private static int speed = bufferTime / 10 - 50;
-    private static boolean pauseFlag = true;
-    private static boolean resetFlag = false;
-    private static boolean canGoFlag = true;
-    private static boolean stopFlag =false;
-    private boolean startFlag = false;
+    public boolean pauseFlag = true;
+    public boolean resetFlag = false;
+    public boolean canGoFlag = true;
+    public boolean stopFlag = false;
+    public boolean startFlag = false;
     private String initialGraphFile = "graphics/input/Tessellation.txt";
     private String initialCodesFile = "graphics/input/KruskalCodes.txt";
-    private Main mainBoard;
+    private JFrame drawOwnGraphFrameBoard;
     private JButton accelerateButton;
     private JButton decelerateButton;
     private JButton startOrPauseButton;
-    private JButton drawGraphButton;
+    public JButton drawGraphButton;
     private JButton resetButton;
     private Code[] codes;
     private GraphicsEdgeWeightedGraph graphicsEdgeWeightedGraph;
     public PaintThread algoPaintThread;
 
-    public KruskalPanel(int width, int height, Main mainBoard) {
-        this.mainBoard = mainBoard;
+    public KruskalPanel(int width, int height, JFrame drawOwnGraphFrameBoard) {
+        this.drawOwnGraphFrameBoard = drawOwnGraphFrameBoard;
         this.height = height;
         this.width = width;
         algoPaintThread = new PaintThread();
@@ -162,8 +165,8 @@ public class KruskalPanel extends JPanel {
             resetFlag = true;
             resetGraph();
             CodeArray.resetCodes(codes, Code.GLASS_GREEN);
-            mainBoard.changeKruskalPanel();
-//            mainBoard.changeBackupPanel();
+//            drawOwnGraphFrameBoard.changeKruskalPanel();
+//            drawOwnGraphFrameBoard.changeBackupPanel();
         });
     }
 
@@ -174,7 +177,8 @@ public class KruskalPanel extends JPanel {
         drawGraphButton.setForeground(Color.white);
         this.add(drawGraphButton);
         drawGraphButton.addActionListener(e -> {
-            mainBoard.changeNewGraphPanel();
+            stopFlag = true;
+//            drawOwnGraphFrameBoard.changeNewGraphPanel();
         });
     }
 
@@ -242,6 +246,10 @@ public class KruskalPanel extends JPanel {
             }
         }
 
+        if (stopFlag) {
+            return;
+        }
+
         for (WeightedLabeledEdge e : graphicsEdgeWeightedGraph.edges())
             pq.insert(e);
         UF uf = new UF(graphicsEdgeWeightedGraph.V());
@@ -256,11 +264,19 @@ public class KruskalPanel extends JPanel {
 
         while (true) {
             System.out.println("algoStart");
+
+            if (stopFlag) {
+                return;
+            }
             if (canGoFlag) {
                 while (!pq.isEmpty()) {
                     checkPause();
                     if (resetFlag) {
                         resetFlag = false;
+                        return;
+                    }
+
+                    if (stopFlag) {
                         return;
                     }
 
@@ -276,6 +292,10 @@ public class KruskalPanel extends JPanel {
                     checkPause();
                     if (resetFlag) {
                         resetFlag = false;
+                        return;
+                    }
+
+                    if (stopFlag) {
                         return;
                     }
 
@@ -300,6 +320,9 @@ public class KruskalPanel extends JPanel {
                             resetFlag = false;
                             return;
                         }
+                        if (stopFlag) {
+                            return;
+                        }
                     } else {
                         setSingleCodeColor(codes, 5, Code.BLACK, Code.GLASS_GREEN);
                         e.setGraphicsColor(WeightedLabeledEdge.GRAY);
@@ -309,6 +332,9 @@ public class KruskalPanel extends JPanel {
                         checkPause();
                         if (resetFlag) {
                             resetFlag = false;
+                            return;
+                        }
+                        if (stopFlag) {
                             return;
                         }
                     }

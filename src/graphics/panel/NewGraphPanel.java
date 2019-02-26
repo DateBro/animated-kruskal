@@ -1,6 +1,9 @@
+package graphics.panel;
+
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.Stack;
 import edu.princeton.cs.algs4.StdRandom;
+import graphics.frame.DrawOwnGraphFrame;
 import graphics.model.Code;
 import graphics.model.GraphicsEdgeWeightedGraph;
 import graphics.model.NumberLabeledVertex;
@@ -25,7 +28,7 @@ public class NewGraphPanel extends JPanel {
     private int width;
     private int xLocate = 0;
     private int yLocate = 0;
-    private Main mainBoard;
+    private JFrame drawOwnGraphFrameBoard;
     private JButton doneButton;
     private Stack<NumberLabeledVertex> selectedVertex;
     private ArrayList<NumberLabeledVertex> vertexArrayList;
@@ -33,16 +36,32 @@ public class NewGraphPanel extends JPanel {
     private ArrayList<WeightedLabeledEdge> edgeArrayList;
     private int currentValue;
     private Code[] codes;
+    public boolean doneFlag = false;
 
-    public NewGraphPanel(int width, int height, Main mainBoard) {
-        this.mainBoard = mainBoard;
+    public NewGraphPanel(int width, int height, JFrame drawOwnGraphFrameBoard) {
+        this.drawOwnGraphFrameBoard = drawOwnGraphFrameBoard;
         this.height = height;
         this.width = width;
         initPanel();
         initDoneButton();
         initCodes();
         reInit();
+        this.addMouseListener(new MouseHandler());
+        this.addMouseMotionListener(new MouseMotionHandler());
         new PaintThread().start();
+    }
+
+    public void waitDone() {
+        while (true) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            if (doneFlag) {
+                break;
+            }
+        }
     }
 
     public void reInit() {
@@ -51,9 +70,6 @@ public class NewGraphPanel extends JPanel {
         selectedVertex = new Stack<>();
         currentVertex = null;
         currentValue = 0;
-
-        this.addMouseListener(new MouseHandler());
-        this.addMouseMotionListener(new MouseMotionHandler());
         new PaintThread().start();
     }
 
@@ -72,8 +88,9 @@ public class NewGraphPanel extends JPanel {
         doneButton.setForeground(Color.white);
         this.add(doneButton);
         doneButton.addActionListener(e -> {
+            doneFlag = true;
             GraphicsEdgeWeightedGraph graphicsEdgeWeightedGraph = new GraphicsEdgeWeightedGraph(vertexArrayList, edgeArrayList);
-            mainBoard.changeBackupPanel(graphicsEdgeWeightedGraph);
+//            drawOwnGraphFrameBoard.changeBackupPanel(graphicsEdgeWeightedGraph);
         });
     }
 
