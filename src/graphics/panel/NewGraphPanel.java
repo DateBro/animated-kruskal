@@ -134,14 +134,24 @@ public class NewGraphPanel extends JPanel {
         repaint();
     }
 
-    public void remove(NumberLabeledVertex vertex) {
+    public void removeVertex(NumberLabeledVertex vertex) {
         if (vertex == null)
             return;
         if (vertex == currentVertex)
             currentVertex = null;
         vertexArrayList.remove(vertex);
-        currentValue--;
         repaint();
+    }
+
+    private void removeEdge(NumberLabeledVertex v) {
+        ArrayList<WeightedLabeledEdge> edgesToRemove = new ArrayList<>();
+        for (int i = 0; i < edgeArrayList.size(); i++) {
+            WeightedLabeledEdge edge = edgeArrayList.get(i);
+            if (edge.eitherLabeledVertex() == v || edge.otherLabeledVertex(edge.eitherLabeledVertex()) == v)
+                edgesToRemove.add(edge);
+        }
+        for (WeightedLabeledEdge e : edgesToRemove)
+            edgeArrayList.remove(e);
     }
 
     private class MouseHandler extends MouseAdapter {
@@ -156,12 +166,14 @@ public class NewGraphPanel extends JPanel {
         @Override
         public void mouseClicked(MouseEvent e) {
             currentVertex = find(e.getPoint());
-            if (currentVertex != null && e.getButton() == MouseEvent.BUTTON3 && e.getClickCount() == 1)
-                remove(currentVertex);
-            if (currentVertex == null && e.getClickCount() == 2) {
+            if (currentVertex != null && e.getButton() == MouseEvent.BUTTON3 && e.getClickCount() == 1) {
+                removeEdge(currentVertex);
+                removeVertex(currentVertex);
+            }
+            if (currentVertex == null && e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 2) {
                 while (!selectedVertex.isEmpty())
                     selectedVertex.pop();
-            } else if (currentVertex != null && e.getClickCount() == 2) {
+            } else if (currentVertex != null && e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 2) {
                 setSelectedVertex(currentVertex);
             }
         }

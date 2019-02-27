@@ -17,7 +17,6 @@ public class WeightedLabeledEdge implements Comparable<WeightedLabeledEdge> {
     public static final int GREEN = 4;
     public static final int BLACK = 5;
     public static final int GRAY = 6;
-
     private final int v;
     private final int w;
     private int weight;
