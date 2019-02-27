@@ -30,3 +30,22 @@
 还请大家注意一下目录结构~代码和说明添加到相应文件夹中。
 
 大于50M资料请压缩成 zip/rar 格式上传。
+
+## 最终效果：
+
+### 用户自定义界面：
+
+![](Imgs/OwnGraphPanel.png)
+
+### 准备对自定义图执行算法：
+
+![](Imgs/OwnGraphPanel.png)
+
+### 自定义图执行算法后：
+
+![](Imgs/AlgoFinished.png)
+
+### 事先定义好的图（k5）：
+
+![](Imgs/FixedGraph.png)
+
