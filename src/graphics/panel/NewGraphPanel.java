@@ -140,6 +140,7 @@ public class NewGraphPanel extends JPanel {
         if (vertex == currentVertex)
             currentVertex = null;
         vertexArrayList.remove(vertex);
+        currentValue--;
         repaint();
     }
 
@@ -148,20 +149,21 @@ public class NewGraphPanel extends JPanel {
         @Override
         public void mousePressed(MouseEvent event) {
             currentVertex = find(event.getPoint());
-            if (currentVertex == null) {
+            if (currentVertex == null)
                 addVertex(event.getPoint());
-                while (!selectedVertex.isEmpty())
-                    selectedVertex.pop();
-            } else {
-                setSelectedVertex(currentVertex);
-            }
         }
 
         @Override
         public void mouseClicked(MouseEvent e) {
             currentVertex = find(e.getPoint());
-            if (currentVertex != null && e.getClickCount() >= 2)
+            if (currentVertex != null && e.getButton() == MouseEvent.BUTTON3 && e.getClickCount() == 1)
                 remove(currentVertex);
+            if (currentVertex == null && e.getClickCount() == 2) {
+                while (!selectedVertex.isEmpty())
+                    selectedVertex.pop();
+            } else if (currentVertex != null && e.getClickCount() == 2) {
+                setSelectedVertex(currentVertex);
+            }
         }
 
         private void setSelectedVertex(NumberLabeledVertex vertex) {

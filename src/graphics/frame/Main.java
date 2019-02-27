@@ -33,7 +33,7 @@ public class Main extends JFrame{
         initNewGraphPanel();
 
         while (true) {
-            StdOut.println("choices");
+//            StdOut.println("choices");
             try {
                 Thread.sleep(50);
             } catch (InterruptedException e) {
